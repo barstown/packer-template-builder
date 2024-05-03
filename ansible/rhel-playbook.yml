@@ -1,0 +1,165 @@
+---
+- hosts: all
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    ###############
+    # Setup Block #
+    ###############
+    - name: Install EPEL repositories
+      ansible.builtin.dnf:
+        name:
+          - epel-next-release # for EPEL on CentOS Stream only
+          - epel-release
+        state: present
+
+    - name: Install DNF packages
+      ansible.builtin.dnf:
+        name:
+          - bind-utils
+          - chrony
+          - gdisk
+          - git
+          - haveged
+          - htop
+          - net-tools
+          - nfs4-acl-tools
+          - pipx
+          - python3-pip
+          - qemu-guest-agent
+          - tmux
+          - tuned
+          - util-linux-user
+          - vim
+          - zram-generator
+          - zsh
+        state: present
+        update_cache: true
+        allowerasing: true
+
+    - name: Enable service services and do not touch the state
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: yes
+      loop:
+        - haveged
+        - qemu-guest-agent
+        - tuned
+
+    - name: Create new users
+      ansible.builtin.user:
+        name: ansible-sa
+        comment: "Ansible Service Account"
+        password: $6$mysecretsalt$Wl9o7aup3R0NMC6bs95Q3u0ZwGRNazUWGMAAPD8b/gIwChDZf1nKS17KhHsRKzWib/026jkTDb/vZKc86gPgr0
+        password_lock: true
+        shell: "/bin/bash"
+        update_password: on_create
+        state: present
+        system: true
+
+    - name: Copy public keys to authorized_keys file
+      ansible.posix.authorized_key:
+        user: ansible-sa
+        key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABG3TncO3Jfi80T3OfllHEycxBszoy8CC7Y41zgeuGM ansible-sa
+        exclusive: true
+        state: present
+
+    - name: Add ansible-sa to sudoers
+      community.general.sudoers:
+        name: 10-ansible-sa
+        user: ansible-sa
+        commands: ALL
+        nopassword: true
+    
+    ####################
+    # RHEL 8 & 9 Block #
+    ####################
+    - name: Cleanup network configs
+      ansible.builtin.shell: |
+        rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
+        rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
+        rm -f /etc/NetworkManager/system-connections/*.nmconnection
+      # when: ansible_os_family == "RedHat" and ansible_distribution_major_version in ['8', '9']
+
+    - name: Remove DNF cache
+      ansible.builtin.command: dnf clean all
+      # when: ansible_os_family == "RedHat" and ansible_distribution_major_version in ['8', '9']
+
+    ################
+    # Common Block #
+    ################
+    - name: Set Timezone
+      community.general.timezone:
+        name: America/New_York
+
+    # - name: Disable cloud-init
+    #   ansible.builtin.file:
+    #     path: /etc/cloud/cloud-init.disabled
+    #     state: touch
+
+    # - name: Configure cloud-init to skip networking
+    #   ansible.builtin.copy:
+    #     dest: /etc/cloud/cloud.cfg.d/01_network.cfg
+    #     src: 01_network.cfg
+
+    # - name: Stop service rsyslog, if started
+    #   service:
+    #     name: rsyslog
+    #     state: stopped
+    #   ignore_errors: true
+
+    # - name: Stop service auditd, if started
+    #   service:
+    #     name: auditd
+    #     state: stopped
+    #   ignore_errors: true
+
+    - name: Cleanup and truncate logs
+      ansible.builtin.shell: |
+        logrotate -f /etc/logrotate.conf
+        rm -f /var/log/*-???????? /var/log/*.gz
+        rm -f /var/log/dmesg.old
+        rm -rf /tmp/*
+        rm -rf /var/log/anaconda
+        rm -rf /var/tmp/*
+        cat /dev/null > /var/log/audit/audit.log
+        cat /dev/null > /var/log/grubby
+        cat /dev/null > /var/log/lastlog
+        cat /dev/null > /var/log/wtmp
+        cat /dev/null > /var/log/btmp
+        cat /dev/null > /var/run/utmp
+
+    - name: Remove hardware udev rules
+      ansible.builtin.shell: rm -f /etc/udev/rules.d/70*
+
+    # - name: Remove Yum Repo Definitions
+    #   shell: rm -f /etc/yum.repos.d/*.repo
+    #   args:
+    #     warn: no
+
+    - name: Remove 01-permitrootlogin.conf
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.d/01-permitrootlogin.conf
+        state: absent
+
+    - name: Remove SSH host keys
+      ansible.builtin.shell: /bin/rm -f /etc/ssh/ssh_host_*
+
+    - name: Remove root user's SSH history
+      ansible.builtin.file:
+        path: /root/.ssh/known_hosts
+        state: absent
+
+    - name: Remove root user's shell history
+      ansible.builtin.file:
+        path: /root/.bash_history
+        state: absent
+    
+    - name: Remove root user's kickstart history
+      ansible.builtin.file:
+        path: /root/*ks
+        state: absent
+
+    - name: Clear out machine-id
+      ansible.builtin.command: echo > /etc/machine-id

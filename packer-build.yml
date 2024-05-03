@@ -1,0 +1,90 @@
+---
+- name: Create VM Image with Packer
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+    credentials_vars_file: "credentials.pkrvars.hcl"
+    packer_install_path: "/usr/local/bin"
+    packer_url: "https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip"
+    packer_version: "1.10.3"
+
+  # vars_prompt:
+  #   - name: platform
+  #     prompt: What platform do you want to build a template from?
+  #     private: false
+
+  #   - name: source_plugin
+  #     prompt: What source plugin are you using? (proxmox-iso)
+  #     private: false
+
+  #   - name: source_username
+  #     prompt: What is your source username?
+  #     private: false
+    
+  #   - name: source_password
+  #     prompt: What is your source password?
+  #     private: true
+
+  tasks:
+    - name: Generate Packer variable file
+      ansible.builtin.copy:
+        content: |
+          source_username   = "{{ source_username }}"
+          source_password   = "{{ source_password }}"
+        dest: "{{ credentials_vars_file }}"
+        mode: '0640'
+        backup: true
+
+    - name: Install required packages
+      ansible.builtin.package:
+        name:
+          - unzip       # required to extract archives in later tasks
+          - xorriso     # required to make an iso of cd content to mount kickstart or other files
+        state: present        
+
+    - name: Check if Packer is installed
+      ansible.builtin.stat:
+        path: "{{ packer_install_path }}/packer"
+      register: packer
+
+    - name: Installing Packer block
+      when: not packer.stat.exists
+      block:
+        - name: Download Packer
+          ansible.builtin.get_url:
+            url: "{{ packer_url }}"
+            dest: "/tmp/packer.zip"
+            mode: '0755'
+
+        - name: Extract Packer
+          ansible.builtin.unarchive:
+            src: "/tmp/packer.zip"
+            dest: "{{ packer_install_path }}"
+            remote_src: false
+            # extra_opts: [--strip-components=1]
+
+        - name: Remove the downloaded zip file
+          ansible.builtin.file:
+            path: "/tmp/packer.zip"
+            state: absent
+
+    - name: Run Packer init
+      ansible.builtin.command: >
+        {{ packer_install_path }}/packer init
+        packer/platforms/{{ platform }}/packer.pkr.hcl
+      changed_when: true
+
+    - name: Run Packer build
+      ansible.builtin.command: >
+        {{ packer_install_path }}/packer build
+        -var-file={{ credentials_vars_file }}
+        -var-file={{ source_plugin }}
+        -var-file=packer/{{ platform }}/platform.pkrvars.hcl
+        packer/platforms/{{ platform }}/packer.pkr.hcl
+      changed_when: true
+      register: packer_output
+
+    - name: Output Packer build result
+      ansible.builtin.debug:
+        msg: "{{ packer_output.stdout_lines }}"
