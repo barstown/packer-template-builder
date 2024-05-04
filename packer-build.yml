@@ -1,7 +1,7 @@
 ---
 - name: Create VM Image with Packer
   hosts: localhost
-  gather_facts: no
+  gather_facts: false
 
   vars:
     credentials_vars_file: "credentials.pkrvars.hcl"
@@ -21,7 +21,7 @@
   #   - name: source_username
   #     prompt: What is your source username?
   #     private: false
-    
+
   #   - name: source_password
   #     prompt: What is your source password?
   #     private: true
@@ -35,13 +35,14 @@
         dest: "{{ credentials_vars_file }}"
         mode: '0640'
         backup: true
+      no_log: true
 
     - name: Install required packages
       ansible.builtin.package:
         name:
           - unzip       # required to extract archives in later tasks
           - xorriso     # required to make an iso of cd content to mount kickstart or other files
-        state: present        
+        state: present
 
     - name: Check if Packer is installed
       ansible.builtin.stat:
@@ -78,8 +79,9 @@
     - name: Run Packer build
       ansible.builtin.command: >
         {{ packer_install_path }}/packer build
+        -only='*.{{ source_plugin }}'
         -var-file={{ credentials_vars_file }}
-        -var-file={{ source_plugin }}
+        -var-file={{ source_plugin }}.pkrvars.hcl
         -var-file=packer/{{ platform }}/platform.pkrvars.hcl
         packer/platforms/{{ platform }}/packer.pkr.hcl
       changed_when: true

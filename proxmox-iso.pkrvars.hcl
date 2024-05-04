@@ -2,4 +2,4 @@
 iso_path                = "truenas_lab:iso"
 proxmox_node            = "proxmox"
 proxmox_storage_pool    = "zfs-storage"
-proxmox_url             = "https://10.0.10.5:8006/api2/json"
+host_url                = "https://10.0.10.5:8006/api2/json"
