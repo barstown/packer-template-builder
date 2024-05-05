@@ -1,7 +1,8 @@
 ---
-- hosts: all
-  gather_facts: yes
-  become: yes
+- name: RHEL family template sysprep
+  hosts: all
+  gather_facts: true
+  become: true
 
   tasks:
     ###############
@@ -41,7 +42,7 @@
     - name: Enable service services and do not touch the state
       ansible.builtin.service:
         name: "{{ item }}"
-        enabled: yes
+        enabled: true
       loop:
         - haveged
         - qemu-guest-agent
@@ -71,7 +72,7 @@
         user: ansible-sa
         commands: ALL
         nopassword: true
-    
+
     ####################
     # RHEL 8 & 9 Block #
     ####################
@@ -81,10 +82,12 @@
         rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
         rm -f /etc/NetworkManager/system-connections/*.nmconnection
       # when: ansible_os_family == "RedHat" and ansible_distribution_major_version in ['8', '9']
+      changed_when: true
 
     - name: Remove DNF cache
       ansible.builtin.command: dnf clean all
       # when: ansible_os_family == "RedHat" and ansible_distribution_major_version in ['8', '9']
+      changed_when: true
 
     ################
     # Common Block #
@@ -129,9 +132,13 @@
         cat /dev/null > /var/log/wtmp
         cat /dev/null > /var/log/btmp
         cat /dev/null > /var/run/utmp
+      changed_when: true
+
 
     - name: Remove hardware udev rules
       ansible.builtin.shell: rm -f /etc/udev/rules.d/70*
+      changed_when: true
+
 
     # - name: Remove Yum Repo Definitions
     #   shell: rm -f /etc/yum.repos.d/*.repo
@@ -145,6 +152,7 @@
 
     - name: Remove SSH host keys
       ansible.builtin.shell: /bin/rm -f /etc/ssh/ssh_host_*
+      changed_when: true
 
     - name: Remove root user's SSH history
       ansible.builtin.file:
@@ -155,7 +163,7 @@
       ansible.builtin.file:
         path: /root/.bash_history
         state: absent
-    
+
     - name: Remove root user's kickstart history
       ansible.builtin.file:
         path: /root/*ks
@@ -163,3 +171,4 @@
 
     - name: Clear out machine-id
       ansible.builtin.command: echo > /etc/machine-id
+      changed_when: true

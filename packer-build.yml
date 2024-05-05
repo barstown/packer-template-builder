@@ -27,6 +27,11 @@
   #     private: true
 
   tasks:
+    - name: Check for existing Packer credentials file
+      ansible.builtin.stat:
+        path: "{{ credentials_vars_file }}"
+      register: credentials
+
     - name: Generate Packer variable file
       ansible.builtin.copy:
         content: |
@@ -35,6 +40,7 @@
         dest: "{{ credentials_vars_file }}"
         mode: '0640'
         backup: true
+      when: not credentials.stat.exists
       no_log: true
 
     - name: Install required packages
@@ -73,17 +79,16 @@
     - name: Run Packer init
       ansible.builtin.command: >
         {{ packer_install_path }}/packer init
-        packer/platforms/{{ platform }}/packer.pkr.hcl
+        packer.pkr.hcl
       changed_when: true
 
     - name: Run Packer build
       ansible.builtin.command: >
         {{ packer_install_path }}/packer build
         -only='*.{{ source_plugin }}'
+        -var-file=packer/platforms/{{ platform }}/platform.pkrvars.hcl
         -var-file={{ credentials_vars_file }}
-        -var-file={{ source_plugin }}.pkrvars.hcl
-        -var-file=packer/{{ platform }}/platform.pkrvars.hcl
-        packer/platforms/{{ platform }}/packer.pkr.hcl
+        packer.pkr.hcl
       changed_when: true
       register: packer_output
 
