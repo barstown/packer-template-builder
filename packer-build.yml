@@ -1,7 +1,7 @@
 ---
 - name: Create VM Image with Packer
-  hosts: localhost
-  connection: local
+  hosts: all
+  # connection: local
   gather_facts: false
   become: true
 
