@@ -127,34 +127,36 @@ variable "version" {
 source "proxmox-iso" "proxmox" {
   # Common parameters
   ###################
-  boot_command = "${var.boot_command}"
-  boot_wait    = "10s"
-  cd_files     = "${var.cd_files}"
-  cd_label     = "${var.cd_label}"
+  boot_command         = "${var.boot_command}"
+  boot_wait            = "10s"
   ssh_password         = "${var.ssh_password}"
   ssh_port             = 22
   ssh_timeout          = "30m"
   ssh_username         = "${var.ssh_user}"
   #Proxmox parameters
   ###################
-  bios         = "ovmf"
+  additional_iso_files {
+    cd_files           = "${var.cd_files}"
+    cd_label           = "${var.cd_label}"
+  }
+  bios                 = "ovmf"
   # cloud_init           = true
   # cloud_init_storage_pool = "${var.proxmox_storage_pool}"
-  cores        = "2"
-  cpu_type     = "host"
+  cores                = "2"
+  cpu_type             = "host"
   disks {
-    discard           = true
-    disk_size         = "${var.proxmox_disk_size}"
-    format            = "${var.proxmox_storage_format}"
-    io_thread         = true
-    ssd               = true
-    storage_pool      = "${var.proxmox_storage_pool}"
-    type              = "scsi"
+    discard            = true
+    disk_size          = "${var.proxmox_disk_size}"
+    format             = "${var.proxmox_storage_format}"
+    io_thread          = true
+    ssd                = true
+    storage_pool       = "${var.proxmox_storage_pool}"
+    type               = "scsi"
   }
   efi_config {
-    efi_storage_pool  = "${var.proxmox_storage_pool}"
-    efi_type          = "4m"
-    pre_enrolled_keys = true
+    efi_storage_pool   = "${var.proxmox_storage_pool}"
+    efi_type           = "4m"
+    pre_enrolled_keys  = true
   }
   # http_directory           = "centos9"
   insecure_skip_tls_verify = true
@@ -162,9 +164,9 @@ source "proxmox-iso" "proxmox" {
   machine                  = "q35"
   memory                   = "2048"
   network_adapters {
-    bridge            = "vmbr1"
-    model             = "virtio"
-    firewall          = true
+    bridge             = "vmbr1"
+    model              = "virtio"
+    firewall           = true
   }
   node                 = "${var.proxmox_node}"
   os                   = "l26"
@@ -185,9 +187,9 @@ build {
   name = "proxmox-${var.platform}"
 
   provisioner "ansible" {
-    playbook_file        = "ansible/${var.playbook_file}"
-    user                 = "${var.ssh_user}"
-    extra_arguments      = "${var.extra_args}"
+    playbook_file      = "ansible/${var.playbook_file}"
+    user               = "${var.ssh_user}"
+    extra_arguments    = "${var.extra_args}"
   }
 
 }
