@@ -79,9 +79,15 @@
     #         path: "/tmp/packer.zip"
     #         state: absent
 
+    # - name: Run Packer init
+    #   ansible.builtin.command: >
+    #     {{ packer_install_path }}/packer init
+    #     packer.pkr.hcl
+    #   changed_when: true
+    
     - name: Run Packer init
       ansible.builtin.command: >
-        {{ packer_install_path }}/packer init
+        packer init
         packer.pkr.hcl
       changed_when: true
 
