@@ -15,7 +15,7 @@
   #     private: false
 
   #   - name: source_plugin
-  #     prompt: What source plugin are you using? (proxmox-iso)
+  #     prompt: What source plugin are you using? (proxmox)
   #     private: false
 
   #   - name: source_username
