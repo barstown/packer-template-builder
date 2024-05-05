@@ -84,16 +84,26 @@
     #     {{ packer_install_path }}/packer init
     #     packer.pkr.hcl
     #   changed_when: true
-    
+
     - name: Run Packer init
       ansible.builtin.command: >
         packer init
         packer.pkr.hcl
       changed_when: true
 
+    # - name: Run Packer build
+    #   ansible.builtin.command: >
+    #     {{ packer_install_path }}/packer build
+    #     -only='*.{{ source_plugin }}'
+    #     -var-file=packer/platforms/{{ platform }}/platform.pkrvars.hcl
+    #     -var-file={{ credentials_vars_file }}
+    #     packer.pkr.hcl
+    #   changed_when: true
+    #   register: packer_output
+
     - name: Run Packer build
       ansible.builtin.command: >
-        {{ packer_install_path }}/packer build
+        packer build
         -only='*.{{ source_plugin }}'
         -var-file=packer/platforms/{{ platform }}/platform.pkrvars.hcl
         -var-file={{ credentials_vars_file }}
