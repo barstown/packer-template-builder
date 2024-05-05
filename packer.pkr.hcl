@@ -138,7 +138,7 @@ source "proxmox-iso" "proxmox" {
   additional_iso_files {
     cd_files           = "${var.cd_files}"
     cd_label           = "${var.cd_label}"
-    iso_storage_pool   = "${var.proxmox_storage_pool}"
+    iso_storage_pool   = "local"
   }
   bios                 = "ovmf"
   # cloud_init           = true

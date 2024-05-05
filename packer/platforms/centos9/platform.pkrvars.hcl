@@ -4,7 +4,7 @@ boot_command                = [
     "e",
     "<down><down><end><wait>",
     # " text inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/inst.ks",
-    " text inst.ks=cdrom:/dev/cdrom/inst.ks",
+    " text inst.ks=cdrom:/inst.ks",
     "<enter><wait><leftCtrlOn>x<leftCtrlOff>"
     ]
 cd_files                    = ["./packer/platforms/centos9/inst.ks"]
