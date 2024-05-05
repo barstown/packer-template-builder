@@ -10,3 +10,10 @@ credentials.pkrvars.hcl
 
 # For built boxes
 *.box
+
+# Ansible-navigator
+ansible-navigator.log
+*.hwm
+*.pwd
+*.pwi
+*-artifact-*.json

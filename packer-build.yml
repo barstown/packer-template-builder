@@ -1,13 +1,16 @@
 ---
+# Requirements:
+# A) Run in container that has ansible, packer, and xorriso available
+# B) Run locallys and ensure you have the necessary packages.
+#
 - name: Create VM Image with Packer
   hosts: localhost
   connection: local
   gather_facts: false
-  # become: true
 
   vars:
     credentials_vars_file: "credentials.pkrvars.hcl"
-    packer_install_path: "/usr/local/bin"
+    packer_install_path: "/usr/bin"
     packer_url: "https://releases.hashicorp.com/packer/{{ packer_version }}/packer_{{ packer_version }}_linux_amd64.zip"
     packer_version: "1.10.3"
 
@@ -79,31 +82,20 @@
     #         path: "/tmp/packer.zip"
     #         state: absent
 
-    # - name: Run Packer init
-    #   ansible.builtin.command: >
-    #     {{ packer_install_path }}/packer init
-    #     packer.pkr.hcl
-    #   changed_when: true
-
     - name: Run Packer init
       ansible.builtin.command: >
-        packer init
+        {{ packer_install_path }}/packer init -force
         packer.pkr.hcl
       changed_when: true
+      register: packer_init
 
-    # - name: Run Packer build
-    #   ansible.builtin.command: >
-    #     {{ packer_install_path }}/packer build
-    #     -only='*.{{ source_plugin }}'
-    #     -var-file=packer/platforms/{{ platform }}/platform.pkrvars.hcl
-    #     -var-file={{ credentials_vars_file }}
-    #     packer.pkr.hcl
-    #   changed_when: true
-    #   register: packer_output
+    - name: Output Packer init result
+      ansible.builtin.debug:
+        msg: "{{ packer_init.stdout_lines }}"
 
     - name: Run Packer build
       ansible.builtin.command: >
-        packer build
+        {{ packer_install_path }}/packer build
         -only='*.{{ source_plugin }}'
         -var-file=packer/platforms/{{ platform }}/platform.pkrvars.hcl
         -var-file={{ credentials_vars_file }}
