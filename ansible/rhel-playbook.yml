@@ -8,12 +8,47 @@
     ###############
     # Setup Block #
     ###############
-    - name: Install EPEL repositories
+    - name: Set Timezone
+      community.general.timezone:
+        name: America/New_York
+
+    - name: Install and enable qemu-guest-agent for KVM
+      when: ansible_virtualization_type == 'kvm'
+      block:
+        - name: Install qemu-guest-agent for KVM VMs
+          ansible.builtin.dnf:
+            name: qemu-guest-agent
+            state: present
+        - name: Enable service and do not touch the state
+          ansible.builtin.service:
+            name: qemu-guest-agent
+            enabled: true
+
+    - name: Install and enable open-vm-tools for VMware
+      when: ansible_virtualization_type == 'VMware'
+      block:
+        - name: Install open-vm-tools for VMware VMs
+          ansible.builtin.dnf:
+            name: open-vm-tools
+            state: present
+        - name: Enable service and do not touch the state
+          ansible.builtin.service:
+            name: open-vm-tools
+            enabled: true
+
+    - name: Install epel-release for RHEL/Rocky/Alma
+      ansible.builtin.dnf:
+        name: epel-release
+        state: present
+      when: ansible_distribution in ['RedHat', 'Rocky', 'AlmaLinux']
+
+    - name: Install epel-release and epel-next-release for CentOS Stream
       ansible.builtin.dnf:
         name:
           - epel-next-release # for EPEL on CentOS Stream only
           - epel-release
         state: present
+      when: ansible_distribution == 'CentOS Stream'
 
     - name: Install DNF packages
       ansible.builtin.dnf:
@@ -28,7 +63,6 @@
           - nfs4-acl-tools
           - pipx
           - python3-pip
-          - qemu-guest-agent
           - tmux
           - tuned
           - util-linux-user
@@ -45,7 +79,6 @@
         enabled: true
       loop:
         - haveged
-        - qemu-guest-agent
         - tuned
 
     - name: Create new users
@@ -73,9 +106,9 @@
         commands: ALL
         nopassword: true
 
-    ####################
-    # RHEL 8 & 9 Block #
-    ####################
+    #################
+    # Cleanup Block #
+    #################
     - name: Cleanup network configs
       ansible.builtin.shell: |
         rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
@@ -89,13 +122,6 @@
       # when: ansible_os_family == "RedHat" and ansible_distribution_major_version in ['8', '9']
       changed_when: true
 
-    ################
-    # Common Block #
-    ################
-    - name: Set Timezone
-      community.general.timezone:
-        name: America/New_York
-
     # - name: Disable cloud-init
     #   ansible.builtin.file:
     #     path: /etc/cloud/cloud-init.disabled
@@ -106,17 +132,17 @@
     #     dest: /etc/cloud/cloud.cfg.d/01_network.cfg
     #     src: 01_network.cfg
 
-    # - name: Stop service rsyslog, if started
-    #   service:
-    #     name: rsyslog
-    #     state: stopped
-    #   ignore_errors: true
+    - name: Stop service rsyslog
+      ansible.builtin.service:
+        name: rsyslog
+        state: stopped
+      ignore_errors: true # noqa: ignore-errors
 
-    # - name: Stop service auditd, if started
-    #   service:
-    #     name: auditd
-    #     state: stopped
-    #   ignore_errors: true
+    - name: Stop service auditd
+      ansible.builtin.service:
+        name: auditd
+        state: stopped
+      ignore_errors: true # noqa: ignore-errors
 
     - name: Cleanup and truncate logs
       ansible.builtin.shell: |
@@ -134,11 +160,9 @@
         cat /dev/null > /var/run/utmp
       changed_when: true
 
-
     - name: Remove hardware udev rules
       ansible.builtin.shell: rm -f /etc/udev/rules.d/70*
       changed_when: true
-
 
     # - name: Remove Yum Repo Definitions
     #   shell: rm -f /etc/yum.repos.d/*.repo

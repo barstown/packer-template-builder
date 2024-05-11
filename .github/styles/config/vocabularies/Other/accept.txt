@@ -1,0 +1,4 @@
+BUG
+FIXME
+HACK
+setuptools
