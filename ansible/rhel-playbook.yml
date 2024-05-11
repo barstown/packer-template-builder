@@ -48,7 +48,9 @@
           - epel-next-release # for EPEL on CentOS Stream only
           - epel-release
         state: present
-      when: ansible_distribution == 'CentOS Stream'
+      when:
+        - ansible_distribution == 'CentOS'
+        - ansible_distribution_release == 'Stream'
 
     - name: Install DNF packages
       ansible.builtin.dnf:
