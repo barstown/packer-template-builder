@@ -36,21 +36,31 @@
             name: open-vm-tools
             enabled: true
 
-    - name: Install epel-release for RHEL/Rocky/Alma
-      ansible.builtin.dnf:
-        name: epel-release
-        state: present
-      when: ansible_distribution in ['RedHat', 'Rocky', 'AlmaLinux']
+    - name: Enable EPEL on RHEL clones
+      when: ansible_distribution in ['CentOS', 'Rocky', 'AlmaLinux']
+      block:
+        - name: Ensure the powertools repository is enabled on RHEL 8 clones
+          community.general.dnf_config_manager:
+            name: powertools
+            state: enabled
+          when: ansible_distribution_major_version == '8'
 
-    - name: Install epel-release and epel-next-release for CentOS Stream
-      ansible.builtin.dnf:
-        name:
-          - epel-next-release # for EPEL on CentOS Stream only
-          - epel-release
-        state: present
-      when:
-        - ansible_distribution == 'CentOS'
-        - ansible_distribution_release == 'Stream'
+        - name: Ensure the crb repository is enabled on RHEL 9 clones
+          community.general.dnf_config_manager:
+            name: crb
+            state: enabled
+          when: ansible_distribution_major_version == '9'
+
+        - name: Install epel-release
+          ansible.builtin.dnf:
+            name: epel-release
+            state: present
+
+        - name: Install epel-next-release for CentOS Stream
+          ansible.builtin.dnf:
+            name: epel-next-release # for EPEL on CentOS Stream only
+            state: present
+          when: ansible_distribution_release == 'Stream'
 
     - name: Install DNF packages
       ansible.builtin.dnf:
@@ -82,6 +92,12 @@
       loop:
         - haveged
         - tuned
+
+    - name: Update all packages
+      ansible.builtin.dnf:
+        name: "*" # noqa: package-latest
+        state: latest
+        allowerasing: true
 
     - name: Create new users
       ansible.builtin.user:
