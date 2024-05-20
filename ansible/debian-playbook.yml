@@ -1,0 +1,207 @@
+---
+- name: Debian family template sysprep
+  hosts: all
+  gather_facts: true
+  become: true
+
+  tasks:
+    ###############
+    # Setup Block #
+    ###############
+    - name: Unmount the dummy volume
+      ansible.posix.mount:
+        path: /dummy
+        state: absent
+
+    - name: Remove the dummy logical volume.
+      community.general.lvol:
+        vg: systemvg
+        lv: dummy
+        state: absent
+        force: true
+
+    - name: Set Timezone
+      community.general.timezone:
+        name: America/New_York
+
+    - name: Install and enable qemu-guest-agent for KVM
+      when: ansible_virtualization_type == 'kvm'
+      block:
+        - name: Install qemu-guest-agent for KVM VMs
+          ansible.builtin.apt:
+            name: qemu-guest-agent
+            state: present
+        - name: Enable service and do not touch the state
+          ansible.builtin.service:
+            name: qemu-guest-agent
+            enabled: true
+
+    - name: Install and enable open-vm-tools for VMware
+      when: ansible_virtualization_type == 'VMware'
+      block:
+        - name: Install open-vm-tools for VMware VMs
+          ansible.builtin.apt:
+            name: open-vm-tools
+            state: present
+        - name: Enable service and do not touch the state
+          ansible.builtin.service:
+            name: open-vm-tools
+            enabled: true
+
+    - name: Install Apt packages
+      ansible.builtin.apt:
+        name:
+          - auditd
+          - bind9-utils
+          - chrony
+          - gdisk
+          - git
+          - haveged
+          - htop
+          - net-tools
+          - nfs4-acl-tools
+          - pipx
+          - python3-pip
+          - rsyslog
+          - systemd-zram-generator
+          - tmux
+          - tuned
+          - vim
+          - zsh
+        state: present
+        update_cache: true
+
+    - name: Enable service services and do not touch the state
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: true
+      loop:
+        - auditd
+        - haveged
+        - rsyslog
+        - tuned
+
+    - name: Update all packages
+      ansible.builtin.apt:
+        upgrade: full
+
+    - name: Create new users
+      ansible.builtin.user:
+        name: ansible-sa
+        comment: "Ansible Service Account"
+        password: $6$mysecretsalt$Wl9o7aup3R0NMC6bs95Q3u0ZwGRNazUWGMAAPD8b/gIwChDZf1nKS17KhHsRKzWib/026jkTDb/vZKc86gPgr0
+        password_lock: true
+        shell: "/bin/bash"
+        update_password: on_create
+        state: present
+        system: true
+
+    - name: Copy public keys to authorized_keys file
+      ansible.posix.authorized_key:
+        user: ansible-sa
+        key: ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIABG3TncO3Jfi80T3OfllHEycxBszoy8CC7Y41zgeuGM ansible-sa
+        exclusive: true
+        state: present
+
+    - name: Ensure sudoers.d exists
+      ansible.builtin.file:
+        path: /etc/sudoers.d
+        state: directory
+        mode: '0750'
+        owner: root
+        group: root
+
+    - name: Add ansible-sa to sudoers
+      community.general.sudoers:
+        name: 10-ansible-sa
+        user: ansible-sa
+        commands: ALL
+        nopassword: true
+
+    #################
+    # Cleanup Block #
+    #################
+    - name: Cleanup network configs
+      ansible.builtin.shell: |
+        rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
+        rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
+        rm -f /etc/NetworkManager/system-connections/*.nmconnection
+      changed_when: true
+
+    - name: Remove dependencies that are no longer required and purge their configuration files
+      ansible.builtin.apt:
+        autoremove: true
+        purge: true
+
+    - name: Remove useless packages from the cache
+      ansible.builtin.apt:
+        autoclean: true
+
+    - name: Run the equivalent of "apt-get clean" as a separate step
+      ansible.builtin.apt:
+        clean: true
+
+    # - name: Disable cloud-init
+    #   ansible.builtin.file:
+    #     path: /etc/cloud/cloud-init.disabled
+    #     state: touch
+
+    # - name: Configure cloud-init to skip networking
+    #   ansible.builtin.copy:
+    #     dest: /etc/cloud/cloud.cfg.d/01_network.cfg
+    #     src: 01_network.cfg
+
+    - name: Stop service rsyslog
+      ansible.builtin.service:
+        name: rsyslog
+        state: stopped
+      ignore_errors: true # noqa: ignore-errors
+
+    - name: Stop service auditd
+      ansible.builtin.service:
+        name: auditd
+        state: stopped
+      ignore_errors: true # noqa: ignore-errors
+
+    - name: Cleanup and truncate logs
+      ansible.builtin.shell: |
+        logrotate -f /etc/logrotate.conf
+        rm -f /var/log/*-???????? /var/log/*.gz
+        rm -f /var/log/dmesg.old
+        rm -rf /tmp/*
+        rm -rf /var/log/installer
+        rm -rf /var/tmp/*
+        cat /dev/null > /var/log/audit/audit.log
+        cat /dev/null > /var/log/grubby
+        cat /dev/null > /var/log/lastlog
+        cat /dev/null > /var/log/wtmp
+        cat /dev/null > /var/log/btmp
+        cat /dev/null > /var/run/utmp
+      changed_when: true
+
+    - name: Remove hardware udev rules
+      ansible.builtin.shell: rm -f /etc/udev/rules.d/70*
+      changed_when: true
+
+    - name: Remove 01-permitrootlogin.conf
+      ansible.builtin.file:
+        path: /etc/ssh/sshd_config.d/01-permitrootlogin.conf
+        state: absent
+
+    - name: Remove SSH host keys
+      ansible.builtin.shell: /bin/rm -f /etc/ssh/ssh_host_*
+      changed_when: true
+
+    - name: Remove root user's SSH history
+      ansible.builtin.file:
+        path: /root/.ssh/known_hosts
+        state: absent
+
+    - name: Remove root user's shell history
+      ansible.builtin.file:
+        path: /root/.bash_history
+        state: absent
+
+    - name: Clear out machine-id
+      ansible.builtin.command: echo > /etc/machine-id
+      changed_when: true
