@@ -59,10 +59,12 @@
           - haveged
           - htop
           - net-tools
+          - network-manager
           - nfs4-acl-tools
           - pipx
           - python3-pip
           - rsyslog
+          - sudo
           - systemd-zram-generator
           - tmux
           - tuned
