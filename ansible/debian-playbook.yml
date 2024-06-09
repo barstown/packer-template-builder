@@ -48,6 +48,30 @@
             name: open-vm-tools
             enabled: true
 
+    - name: Create SSH key regeneration script
+      ansible.builtin.copy:
+        dest: /usr/local/bin/regenerate_ssh_keys.sh
+        content: |
+          #!/bin/bash
+          dpkg-reconfigure openssh-server
+          rm -f /etc/systemd/system/firstboot.service
+        mode: '0755'
+
+    - name: Create systemd service for SSH key regeneration
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/firstboot.service
+        content: |
+          [Unit]
+          Description=Regenerate SSH host keys on first boot
+
+          [Service]
+          Type=oneshot
+          ExecStart=/usr/local/bin/regenerate_ssh_keys.sh
+
+          [Install]
+          WantedBy=multi-user.target
+        mode: '0755'
+
     - name: Install Apt packages
       ansible.builtin.apt:
         name:
@@ -81,6 +105,7 @@
       loop:
         - auditd
         - firewalld
+        - firstboot
         - haveged
         - NetworkManager
         - rsyslog
@@ -130,6 +155,10 @@
         user: ansible-sa
         commands: ALL
         nopassword: true
+
+    - name: Set hostname to localhost.localdomain
+      ansible.builtin.hostname:
+        name: localhost.localdomain
 
     #################
     # Cleanup Block #
