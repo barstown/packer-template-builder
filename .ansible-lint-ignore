@@ -1,0 +1,24 @@
+#
+# This file defines a list of ansible-lint ignore settings.
+# The file format is very simple, containing the filename and the rule to be
+# ignored.
+# Documentation for this, and the rules available, can be found here:
+# https://ansible.readthedocs.io/projects/lint/rules/
+# https://ansible.readthedocs.io/projects/lint/usage/#muting-warnings-to-avoid-false-positives
+#
+# Any files and rules defined here will still cause a warning or a failure in
+# ansible-lint output, which is expected behavior as of 2023-10.
+# As such, this should be used as a place to document known best-practice
+# violations so we can come back to them later to either improve them or fix
+# the issue. This should be our first step every time.
+#
+# If a permanent ignore for a rule needs to be defined, it should be done one
+# of three ways:
+#   1. Add the rule to the skip_list in the adjacent .ansible-lint file.
+#   This is *not* preferred.
+#   2. Add "# noqa: [rule]" as a comment at the end of a line in a task.
+#   This method will fully ignore that specific rule for that specific task.
+#   You can space delineate multiple rules if required.
+#   3. Add a tag of "- skip_ansible_lint" to a task.
+#   Docs state this is the least preferred method as it will skip all checks.
+#

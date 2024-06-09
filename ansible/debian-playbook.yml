@@ -54,6 +54,7 @@
           - auditd
           - bind9-utils
           - chrony
+          - firewalld
           - gdisk
           - git
           - haveged
@@ -79,9 +80,19 @@
         enabled: true
       loop:
         - auditd
+        - firewalld
         - haveged
+        - NetworkManager
         - rsyslog
         - tuned
+
+    - name: Disable services and do not touch the state
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: false
+      loop:
+        - networking
+        - nftables
 
     - name: Update all packages
       ansible.builtin.apt:
@@ -125,6 +136,7 @@
     #################
     - name: Cleanup network configs
       ansible.builtin.shell: |
+        rm -f /etc/network/interfaces
         rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
         rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
         rm -f /etc/NetworkManager/system-connections/*.nmconnection
@@ -204,6 +216,18 @@
         path: /root/.bash_history
         state: absent
 
-    - name: Clear out machine-id
-      ansible.builtin.command: echo > /etc/machine-id
+    - name: Truncate /etc/machine-id
+      ansible.builtin.command: truncate -s 0 /etc/machine-id
       changed_when: true
+
+    - name: Remove machine-id file from /var/lib/dbus
+      ansible.builtin.file:
+        path: /var/lib/dbus/machine-id
+        state: absent
+        force: true
+
+    - name: Create symlink for /var/lib/dbus/machine-id
+      ansible.builtin.file:
+        src: /etc/machine-id
+        dest: /var/lib/dbus/machine-id
+        state: link
