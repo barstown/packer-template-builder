@@ -160,6 +160,62 @@
       ansible.builtin.hostname:
         name: localhost.localdomain
 
+    - name: Copy grepconf.sh to /usr/libexec
+      ansible.builtin.copy:
+        src: files/grepconf.sh
+        dest: /usr/libexec
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Copy GREP_COLORS to /etc
+      ansible.builtin.copy:
+        src: files/GREP_COLORS
+        dest: /etc
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy DIR_COLORS to /etc
+      ansible.builtin.copy:
+        src: files/DIR_COLORS
+        dest: /etc
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy DIR_COLORS.lightbgcolor to /etc
+      ansible.builtin.copy:
+        src: files/DIR_COLORS.lightbgcolor
+        dest: /etc
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copy contents of profile.d to /etc/profile.d
+      ansible.builtin.copy:
+        src: files/profile.d/
+        dest: /etc/profile.d
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Ensure skip_defaults_vim is uncommented in /etc/vim/vimrc
+      ansible.builtin.lineinfile:
+        path: /etc/vim/vimrc
+        regexp: '^"\s*let g:skip_defaults_vim = 1'
+        line: 'let g:skip_defaults_vim = 1'
+        state: present
+        backrefs: yes
+
+    - name: Create vimrc overrides
+      ansible.builtin.copy:
+        src: files/vimrc.local
+        dest: /etc/vim/vimrc.local
+        owner: root
+        group: root
+        mode: '0644'
+
     #################
     # Cleanup Block #
     #################
