@@ -71,7 +71,6 @@
           - chrony
           - gdisk
           - git
-          - haveged
           - htop
           - net-tools
           - nfs4-acl-tools
@@ -92,7 +91,6 @@
         name: "{{ item }}"
         enabled: true
       loop:
-        - haveged
         - tuned
 
     - name: Update all packages
@@ -151,6 +149,15 @@
     #   ansible.builtin.copy:
     #     dest: /etc/cloud/cloud.cfg.d/01_network.cfg
     #     src: 01_network.cfg
+
+    - name: Replace default logrotate.conf
+      ansible.builtin.copy:
+        dest: /etc/logrotate.conf
+        src: files/logrotate.conf
+        owner: root
+        group: root
+        mode: '0644'
+        backup: true
 
     - name: Stop service rsyslog
       ansible.builtin.service:
