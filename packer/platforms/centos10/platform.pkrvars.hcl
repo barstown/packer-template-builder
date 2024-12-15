@@ -16,6 +16,7 @@ playbook_file               = "centos-playbook.yml"
 proxmox_boot                = "order=scsi0;ide2;ide0;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
+proxmox_pre_enrolled_keys   = "false"
 proxmox_vm_id               = 202
 ssh_password                = "packer"
 ssh_user                    = "root"
