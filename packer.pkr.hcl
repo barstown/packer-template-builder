@@ -169,7 +169,7 @@ source "proxmox-iso" "proxmox" {
   efi_config {
     efi_storage_pool   = "${var.proxmox_storage_pool}"
     efi_type           = "4m"
-    pre_enrolled_keys  = "${proxmox_pre_enrolled_keys}"
+    pre_enrolled_keys  = "${var.proxmox_pre_enrolled_keys}"
   }
   # http_directory           = "centos9"
   insecure_skip_tls_verify = true
