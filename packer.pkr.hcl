@@ -86,6 +86,11 @@ variable "proxmox_boot" {
   default = ""
 }
 
+variable "proxmox_cpu_type" {
+  type    = string
+  default = "host"
+}
+
 variable "proxmox_disk_size" {
   type    = string
   default = ""
@@ -156,7 +161,7 @@ source "proxmox-iso" "proxmox" {
   # cloud_init           = true
   # cloud_init_storage_pool = "${var.proxmox_storage_pool}"
   cores                = "2"
-  cpu_type             = "host"
+  cpu_type             = "${var.proxmox_cpu_type}"
   disks {
     discard            = true
     disk_size          = "${var.proxmox_disk_size}"
