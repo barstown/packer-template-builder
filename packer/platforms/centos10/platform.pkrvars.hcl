@@ -13,6 +13,7 @@ extra_args                  = ["--scp-extra-args", "'-O'"]
 iso_name                    = "CentOS-Stream-10-latest-x86_64-dvd1.iso"
 platform                    = "centos10"
 playbook_file               = "centos-playbook.yml"
+proxmox_boot                = "order=scsi0;ide2;ide0;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
 proxmox_vm_id               = 202
