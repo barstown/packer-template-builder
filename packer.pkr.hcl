@@ -1,7 +1,7 @@
 packer {
     required_plugins {
       proxmox = {
-        version = ">= 1.1.7"
+        version = ">= 1.2.2"
         source  = "github.com/hashicorp/proxmox"
       }
       ansible = {
@@ -81,6 +81,11 @@ variable "template_name" {
 
 # Proxmox variables
 ###################
+variable "proxmox_boot" {
+  type    = string
+  default = ""
+}
+
 variable "proxmox_disk_size" {
   type    = string
   default = ""
@@ -106,6 +111,11 @@ variable "proxmox_storage_pool" {
   default = "zfs-storage"
 }
 
+variable "proxmox_pre_enrolled_keys" {
+  type    = bool
+  default = true
+}
+
 variable "proxmox_url" {
   type    = string
   default = "https://10.0.10.5:8006/api2/json"
@@ -127,6 +137,7 @@ variable "version" {
 source "proxmox-iso" "proxmox" {
   # Common parameters
   ###################
+  boot                 = "${var.proxmox_boot}"
   boot_command         = "${var.boot_command}"
   boot_wait            = "10s"
   ssh_password         = "${var.ssh_password}"
@@ -158,7 +169,7 @@ source "proxmox-iso" "proxmox" {
   efi_config {
     efi_storage_pool   = "${var.proxmox_storage_pool}"
     efi_type           = "4m"
-    pre_enrolled_keys  = true
+    pre_enrolled_keys  = "${proxmox_pre_enrolled_keys}"
   }
   # http_directory           = "centos9"
   insecure_skip_tls_verify = true
