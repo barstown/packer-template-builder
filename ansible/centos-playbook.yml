@@ -49,7 +49,7 @@
           community.general.dnf_config_manager:
             name: crb
             state: enabled
-          when: ansible_distribution_major_version == '9'
+            when: ansible_distribution_major_version in ['9', '10']
 
         - name: Install epel-release
           ansible.builtin.dnf:
@@ -58,9 +58,11 @@
 
         - name: Install epel-next-release for CentOS Stream
           ansible.builtin.dnf:
-            name: epel-next-release # for EPEL on CentOS Stream only
+            name: epel-next-release # for EPEL on CentOS Stream 9 only
             state: present
-          when: ansible_distribution_release == 'Stream'
+            when:
+              - ansible_distribution_release == 'Stream'
+              - ansible_distribution_major_version == '9'
 
     - name: Install DNF packages
       ansible.builtin.dnf:
