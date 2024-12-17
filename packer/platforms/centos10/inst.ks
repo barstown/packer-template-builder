@@ -23,7 +23,6 @@ logvol /var/log --vgname=systemvg --name=varlog --fstype=xfs --size=5120
 logvol /var/log/audit --vgname=systemvg --name=varlogaudit --fstype=xfs --size=4096
 logvol /var/tmp --vgname=systemvg --name=vartmp --fstype=xfs --size=4096
 
-auth --passalgo=sha512 --useshadow
 network --bootproto=dhcp --ipv6=auto --activate
 network  --hostname=localhost.localdomain
 skipx
