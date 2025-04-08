@@ -164,10 +164,10 @@ source "proxmox-iso" "proxmox" {
   }
   bios                 = "ovmf"
   boot_iso {
-    # type               = "scsi"
-    iso_file           = "${var.proxmox_iso_path}/${var.iso_name}"
-    unmount            = true
     iso_checksum       = "${var.iso_checksum}"
+    iso_file           = "${var.proxmox_iso_path}/${var.iso_name}"
+    # type               = "scsi"
+    unmount            = true
   }
   # cloud_init           = true
   # cloud_init_storage_pool = "${var.proxmox_storage_pool}"
