@@ -166,7 +166,7 @@ source "proxmox-iso" "proxmox" {
   boot_iso {
     iso_checksum       = "${var.iso_checksum}"
     iso_file           = "${var.proxmox_iso_path}/${var.iso_name}"
-    # type               = "scsi"
+    type               = "scsi"
     unmount            = true
   }
   # cloud_init           = true
