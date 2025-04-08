@@ -20,14 +20,14 @@ boot_command                = [
 cd_files                    = ["./packer/platforms/debian12/preseed.cfg"]
 cd_label                    = "cidata"
 extra_args                  = ["--scp-extra-args", "'-O'"]
-iso_checksum                = "sha256:013f5b44670d81280b5b1bc02455842b250df2f0c6763398feb69af1a805a14f"
-iso_name                    = "debian-12.5.0-amd64-netinst.iso"
+iso_checksum                = "sha256:ee8d8579128977d7dc39d48f43aec5ab06b7f09e1f40a9d98f2a9d149221704a"
+iso_name                    = "debian-12.10.0-amd64-netinst.iso"
 platform                    = "debian12"
 playbook_file               = "debian-playbook.yml"
 proxmox_boot                = "order=scsi0;ide2;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
-proxmox_vm_id               = 203
+proxmox_vm_id               = 200
 ssh_password                = "packer"
 ssh_user                    = "root"
 template_description        = "Debian 12 Template"
