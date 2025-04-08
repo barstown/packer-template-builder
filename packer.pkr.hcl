@@ -158,6 +158,12 @@ source "proxmox-iso" "proxmox" {
     unmount            = true
   }
   bios                 = "ovmf"
+  boot_iso {
+    # type               = "scsi"
+    iso_file           = "${var.proxmox_iso_path}/${var.iso_name}"
+    unmount            = true
+    iso_checksum       = "${var.iso_checksum}"
+  }
   # cloud_init           = true
   # cloud_init_storage_pool = "${var.proxmox_storage_pool}"
   cores                = "2"
@@ -178,7 +184,7 @@ source "proxmox-iso" "proxmox" {
   }
   # http_directory           = "centos9"
   insecure_skip_tls_verify = true
-  iso_file                 = "${var.proxmox_iso_path}/${var.iso_name}"
+  # iso_file                 = "${var.proxmox_iso_path}/${var.iso_name}"
   machine                  = "q35"
   memory                   = "2048"
   network_adapters {
@@ -195,7 +201,7 @@ source "proxmox-iso" "proxmox" {
   scsi_controller      = "virtio-scsi-single"
   template_description = "${var.template_description}"
   template_name        = "${var.template_name}"
-  unmount_iso          = true
+  # unmount_iso          = true
   vm_id                = "${var.proxmox_vm_id}"
 }
 

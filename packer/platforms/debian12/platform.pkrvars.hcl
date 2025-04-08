@@ -21,6 +21,7 @@ cd_files                    = ["./packer/platforms/debian12/preseed.cfg"]
 cd_label                    = "cidata"
 extra_args                  = ["--scp-extra-args", "'-O'"]
 iso_name                    = "debian-12.10.0-amd64-netinst.iso"
+iso_checksum                = "sha256:ee8d8579128977d7dc39d48f43aec5ab06b7f09e1f40a9d98f2a9d149221704a"
 platform                    = "debian12"
 playbook_file               = "debian-playbook.yml"
 proxmox_disk_size           = "50G"
