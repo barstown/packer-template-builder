@@ -34,6 +34,11 @@ variable "extra_args" {
   default = [""]
 }
 
+variable "iso_checksum" {
+  type    = string
+  default = ""
+}
+
 variable "iso_name" {
   type    = string
   default = ""

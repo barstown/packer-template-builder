@@ -10,6 +10,7 @@ boot_command                = [
 cd_files                    = ["./packer/platforms/centos9/inst.ks"]
 cd_label                    = "KICKSTART"
 extra_args                  = ["--scp-extra-args", "'-O'"]
+iso_checksum                = "sha256:ec408b66ee81327749a9b0143b3960ac0e4f715a98f6bd3c198ffe56bd8f25d9"
 iso_name                    = "CentOS-Stream-9-latest-x86_64-dvd1.iso"
 platform                    = "centos9"
 playbook_file               = "centos-playbook.yml"
