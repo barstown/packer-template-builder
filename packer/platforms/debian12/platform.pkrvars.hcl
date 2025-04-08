@@ -27,7 +27,7 @@ playbook_file               = "debian-playbook.yml"
 proxmox_boot                = "order=scsi0;ide2;ide0;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
-proxmox_vm_id               = 200
+proxmox_vm_id               = 203
 ssh_password                = "packer"
 ssh_user                    = "root"
 template_description        = "Debian 12 Template"
