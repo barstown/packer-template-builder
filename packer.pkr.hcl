@@ -161,7 +161,7 @@ source "proxmox-iso" "proxmox" {
     cd_label           = "${var.cd_label}"
     # iso_checksum       = "none"
     iso_storage_pool   = "local"
-    type               = "scsi"
+    # type               = "scsi"
     unmount            = true
   }
   bios                 = "ovmf"

@@ -24,7 +24,7 @@ iso_checksum                = "sha256:013f5b44670d81280b5b1bc02455842b250df2f0c6
 iso_name                    = "debian-12.5.0-amd64-netinst.iso"
 platform                    = "debian12"
 playbook_file               = "debian-playbook.yml"
-# proxmox_boot                = "order=scsi0;ide2;net0"
+proxmox_boot                = "order=scsi0;ide2;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
 proxmox_vm_id               = 203
