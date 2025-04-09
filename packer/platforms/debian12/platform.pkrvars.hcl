@@ -20,8 +20,8 @@ boot_command                = [
 cd_files                    = ["./packer/platforms/debian12/preseed.cfg"]
 cd_label                    = "cidata"
 extra_args                  = ["--scp-extra-args", "'-O'"]
-iso_checksum                = "sha256:ee8d8579128977d7dc39d48f43aec5ab06b7f09e1f40a9d98f2a9d149221704a"
-iso_name                    = "debian-12.10.0-amd64-netinst.iso"
+iso_checksum                = "sha256:eb5034ff88a20c176066a670268f22e3f681117189c03bdae964566995652181"
+iso_name                    = "debian-12.10.0-amd64-DVD-1.iso"
 platform                    = "debian12"
 playbook_file               = "debian-playbook.yml"
 proxmox_boot                = "order=scsi0;ide2;ide0;net0"
