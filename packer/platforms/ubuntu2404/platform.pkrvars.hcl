@@ -16,7 +16,7 @@ boot_command                = [
     "<enter><wait2>",
     "<enter>",
     ]
-cd_files                    = ["./packer/platforms/ubuntu2404/preseed.cfg"]
+cd_files                    = ["./packer/platforms/ubuntu2404/meta-data", "./packer/platforms/ubuntu2404/user-data"]
 cd_label                    = "cidata"
 extra_args                  = ["--scp-extra-args", "'-O'"]
 iso_checksum                = "sha256:d6dab0c3a657988501b4bd76f1297c053df710e06e0c3aece60dead24f270b4d"

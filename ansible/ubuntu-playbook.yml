@@ -8,17 +8,17 @@
     ###############
     # Setup Block #
     ###############
-    - name: Unmount the dummy volume
-      ansible.posix.mount:
-        path: /dummy
-        state: absent
+    # - name: Unmount the dummy volume
+    #   ansible.posix.mount:
+    #     path: /dummy
+    #     state: absent
 
-    - name: Remove the dummy logical volume.
-      community.general.lvol:
-        vg: systemvg
-        lv: dummy
-        state: absent
-        force: true
+    # - name: Remove the dummy logical volume.
+    #   community.general.lvol:
+    #     vg: systemvg
+    #     lv: dummy
+    #     state: absent
+    #     force: true
 
     - name: Set Timezone
       community.general.timezone:
