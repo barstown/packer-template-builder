@@ -3,18 +3,8 @@ boot_command                = [
     "<wait5>",
     "e",
     "<wait2><down><wait><down><wait><down><wait><end><wait2>",
-    " preseed/file=/mnt/cdrom2/preseed.cfg<wait5>",
-    "<leftCtrlOn><wait>x<wait><leftCtrlOff><wait10>",
-    "<leftAltOn><wait><f2><wait><leftAltOff><wait2>",
-    "<enter><wait>",
-    "sudo mkdir -p /mnt/cdrom2",
-    "<enter><wait>",
-    "sudo mount -t iso9660 /dev/sr1 /mnt/cdrom2",
-    "<enter><wait>",
-    "<leftAltOn><f1><leftAltOff><wait2>",
-    "<enter><wait2>",
-    "<enter><wait2>",
-    "<enter>",
+    " autoinstall ds="nocloud-net"<wait5>",
+    "<wait><f10><wait5>",
     ]
 cd_files                    = ["./packer/platforms/ubuntu2404/meta-data", "./packer/platforms/ubuntu2404/user-data"]
 cd_label                    = "cidata"
