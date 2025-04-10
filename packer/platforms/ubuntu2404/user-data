@@ -232,10 +232,11 @@ autoinstall:
       - name: root
         # must be SHA512.
         # openssl passwd -6
-        passwd: "$6$LgjZTiwbfaeVPVQG$Nm6em5nv1Q72pkfizTAv5s6Sgyx1dmIeMA3b0e3iaSc/ZnZAMGhwaBnew2InTV36XJ6hQV4aUB1A4CBrG3Ghz."
+        passwd: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
         lock_passwd: false
         shell: /bin/bash
   late-commands:
-    - curtin in-target -- mkdir -p /target/etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /target/etc/ssh/sshd_config.d/01-permitrootlogin.conf
-    - echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/packer
+    - curtin in-target --target=/target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
+    - curtin in-target --target=/target -- echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/packer
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/packer
+    - curtin in-target --target=/target -- sudo -s
