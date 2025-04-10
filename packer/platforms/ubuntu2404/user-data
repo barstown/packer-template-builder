@@ -9,7 +9,9 @@ autoinstall:
     layout: us
   locale: en_US.UTF-8
   network:
-    renderer: NetworkManager
+    network:
+      version: 2
+      renderer: NetworkManager
   packages:
     - cloud-init
   source:
