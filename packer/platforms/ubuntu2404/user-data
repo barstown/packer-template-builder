@@ -3,11 +3,6 @@
 # https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 autoinstall:
   version: 1
-  identity:
-    hostname: ubuntu2404
-    password: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
-    realname: Kyle Barstow
-    username: kyle
   kernel:
     package: linux-generic
   keyboard:
@@ -231,14 +226,5 @@ autoinstall:
         - name: root
           password: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
     disable_root: false
-    # users:
-    #   - name: root
-    #     # must be SHA512.
-    #     # openssl passwd -6
-    #     passwd: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
-    #     lock_passwd: false
-    #     shell: /bin/bash
   late-commands:
     - mkdir -p /target/etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /target/etc/ssh/sshd_config.d/01-permitrootlogin.conf
-    - echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/packer
-    - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/packer
