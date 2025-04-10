@@ -28,8 +28,12 @@ autoinstall:
     # Physical disk
     - type: disk
       id: disk-sda
-      match:
-        path: /dev/sda
+      grub_device: false
+      # match:
+      #   path: /dev/sda
+      name: ''
+      path: /dev/sda
+      preserve: false
       ptable: gpt
 
     # /boot/efi
