@@ -10,6 +10,7 @@ autoinstall:
   locale: en_US.UTF-8
   packages:
     - cloud-init
+    - qemu-guest-agent
   source:
     id: ubuntu-server
     search_drivers: false
