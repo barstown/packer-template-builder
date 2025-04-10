@@ -27,32 +27,36 @@ autoinstall:
   storage:
     config:
     # Physical disk
-    - type: disk
+    - ptable: gpt
+      serial: 0QEMU_QEMU_HARDDISK_drive-scsi0
+      path: /dev/sda
+      preserve: false
+      name: ''
+      grub_device: false
       id: disk-sda
-      match:
-        path: /dev/sda
-      ptable: gpt
+      type: disk
 
     # /boot/efi
-    - type: partition
-      id: partition-0
-      device: disk-sda
-      flag: boot
-      grub_device: true
-      number: 1
-      path: /dev/sda1
-      preserve: false
-      size: 1G
+    - device: disk-sda
+      size: 1127219200
       wipe: superblock
-    - type: format
-      id: format-0
-      fstype: vfat
+      flag: boot
+      number: 1
       preserve: false
+      grub_device: true
+      offset: 1048576
+      path: /dev/sda1
+      id: partition-0
+      type: partition
+    - fstype: vfat
       volume: partition-0
-    - type: mount
-      id: mount-0
+      preserve: false
+      id: format-0
+      type: format
+    - path: /boot/efi
       device: format-0
-      path: /boot/efi
+      id: mount-0
+      type: mount
 
     # /boot
     - device: disk-sda
