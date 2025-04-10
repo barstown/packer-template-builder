@@ -236,7 +236,6 @@ autoinstall:
         lock_passwd: false
         shell: /bin/bash
   late-commands:
-    - curtin in-target --target=/target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
-    - curtin in-target --target=/target -- echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /etc/sudoers.d/packer
+    - mkdir -p /target/etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /target/etc/ssh/sshd_config.d/01-permitrootlogin.conf
+    - echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/packer
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/packer
-    - curtin in-target --target=/target -- sudo -s
