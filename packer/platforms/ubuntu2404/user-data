@@ -13,10 +13,6 @@ autoinstall:
   keyboard:
     layout: us
   locale: en_US.UTF-8
-  network:
-    network:
-      version: 2
-      renderer: networkd
   packages:
     - cloud-init
   source:
