@@ -3,6 +3,11 @@
 # https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 autoinstall:
   version: 1
+  identity:
+    hostname: ubuntu2404
+    password: $6$LgjZTiwbfaeVPVQG$Nm6em5nv1Q72pkfizTAv5s6Sgyx1dmIeMA3b0e3iaSc/ZnZAMGhwaBnew2InTV36XJ6hQV4aUB1A4CBrG3Ghz.
+    realname: root
+    username: root
   kernel:
     package: linux-generic
   keyboard:
@@ -227,12 +232,12 @@ autoinstall:
     chpasswd:
       expire: false
     disable_root: false
-    users:
-      - name: root
-        # must be SHA512.
-        # openssl passwd -6
-        passwd: "$6$LgjZTiwbfaeVPVQG$Nm6em5nv1Q72pkfizTAv5s6Sgyx1dmIeMA3b0e3iaSc/ZnZAMGhwaBnew2InTV36XJ6hQV4aUB1A4CBrG3Ghz."
-        lock_passwd: false
-        shell: /bin/bash
+    # users:
+    #   - name: root
+    #     # must be SHA512.
+    #     # openssl passwd -6
+    #     passwd: "$6$LgjZTiwbfaeVPVQG$Nm6em5nv1Q72pkfizTAv5s6Sgyx1dmIeMA3b0e3iaSc/ZnZAMGhwaBnew2InTV36XJ6hQV4aUB1A4CBrG3Ghz."
+    #     lock_passwd: false
+    #     shell: /bin/bash
   late-commands:
     - curtin in-target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
