@@ -11,7 +11,7 @@ autoinstall:
   network:
     network:
       version: 2
-      renderer: NetworkManager
+      renderer: networkd
   packages:
     - cloud-init
   source:
@@ -42,8 +42,6 @@ autoinstall:
       device: disk-sda
       flag: boot
       grub_device: true
-      # number: 1
-      # path: /dev/sda1
       preserve: false
       size: 1G
       wipe: superblock
@@ -62,8 +60,6 @@ autoinstall:
       id: partition-1
       device: disk-sda
       grub_device: false
-      # number: 2
-      # path: /dev/sda2
       preserve: false
       size: 1G
       wipe: superblock
@@ -82,8 +78,6 @@ autoinstall:
       id: partition-2
       device: disk-sda
       grub_device: false
-      # number: 3
-      # path: /dev/sda3
       preserve: false
       size: -1
       wipe: superblock
@@ -242,5 +236,3 @@ autoinstall:
         shell: /bin/bash
   late-commands:
     - curtin in-target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
-    - curtin in-target -- apt update
-    - curtin in-target -- apt install -y network-manager

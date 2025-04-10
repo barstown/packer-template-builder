@@ -92,6 +92,7 @@
           - htop
           - libnfs-utils
           - net-tools
+          - network-manager
           - nfs4-acl-tools
           - pipx
           - python3-pip
@@ -102,7 +103,6 @@
           - tuned
           - vim
           - zsh
-          # - network-manager
         state: present
         update_cache: true
 
@@ -115,7 +115,7 @@
         - firewalld
         - firstboot
         - haveged
-        # - NetworkManager
+        - NetworkManager
         - rsyslog
         - tuned
 
@@ -126,6 +126,18 @@
       loop:
         # - networking
         - nftables
+
+    - name: Ensure Netplan file configures network with renderer NetworkManager
+      ansible.builtin.blockinfile:
+        path: /etc/netplan/50-cloud-init.yaml
+        block: |
+          network:
+            version: 2
+            renderer: NetworkManager
+
+    - name: Apply netplan changes
+      ansible.builtin.command: netplan apply
+      changed_when: true
 
     - name: Update all packages
       ansible.builtin.apt:
