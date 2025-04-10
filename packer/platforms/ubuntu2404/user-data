@@ -14,7 +14,6 @@ autoinstall:
       renderer: NetworkManager
   packages:
     - cloud-init
-    - network-manager
   source:
     id: ubuntu-server
     search_drivers: false
@@ -243,3 +242,5 @@ autoinstall:
         shell: /bin/bash
   late-commands:
     - curtin in-target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
+    - curtin in-target -- apt update
+    - curtin in-target -- apt install -y network-manager
