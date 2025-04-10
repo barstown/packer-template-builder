@@ -3,20 +3,15 @@
 # https://canonical-subiquity.readthedocs-hosted.com/en/latest/reference/autoinstall-reference.html
 autoinstall:
   version: 1
-  identity:
-    hostname: ubuntu2404
-    password: $6$OhGpqVY2W1b.7teR$JkeMYz780m4DpVARL0uaB1ksjV36tSmKon5LB2rnpLij7F11vNyYve.NUiExzev6aE6yhoM6q8yA3UEpw7ozf/
-    realname: Kyle Barstow
-    username: kyle
   kernel:
     package: linux-generic
   keyboard:
     layout: us
   locale: en_US.UTF-8
+  network:
+    renderer: NetworkManager
   packages:
-    - cifs-utils
     - cloud-init
-    - libnfs-utils
   source:
     id: ubuntu-server
     search_drivers: false
@@ -25,6 +20,8 @@ autoinstall:
     authorized-keys: []
     install-server: true
   storage:
+    swap:
+      size: 0
     config:
     # Physical disk
     - type: disk
@@ -55,176 +52,185 @@ autoinstall:
       path: /boot/efi
 
     # /boot
-    - device: disk-sda
-      size: 1073741824
-      wipe: superblock
-      number: 2
-      preserve: false
-      grub_device: false
-      offset: 1128267776
-      path: /dev/sda2
+    - type: partition
       id: partition-1
-      type: partition
-    - fstype: xfs
-      volume: partition-1
+      device: disk-sda
+      grub_device: false
+      number: 2
+      path: /dev/sda2
       preserve: false
+      size: 1G
+      wipe: superblock
+    - type: format
       id: format-1
-      type: format
+      fstype: xfs
+      preserve: false
+      volume: partition-1
     - path: /boot
-      device: format-1
       id: mount-1
+      device: format-1
       type: mount
 
     # LVM physical volumes
-    - device: disk-sda
-      size: 51484033024
+    - type: partition
+      id: partition-2
+      device: disk-sda
       wipe: superblock
       number: 3
       preserve: false
       grub_device: false
-      offset: 2202009600
       path: /dev/sda3
-      id: partition-2
-      type: partition
+      size: -1
 
     # LVM volume groups
-    - name: systemvg
-      devices:
-      - partition-2
-      preserve: false
+    - type: lvm_volgroup
       id: lvm_volgroup-0
-      type: lvm_volgroup
+      devices:
+        - partition-2
+      name: systemvg
+      preserve: false
 
     # /
-    - name: sysroot
-      volgroup: lvm_volgroup-0
-      size: 10737418240B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/sysroot
+    - type: lvm_partition
       id: lvm_partition-0
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-0
+      name: sysroot
+      path: /dev/systemvg/sysroot
       preserve: false
+      size: 10G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-2
-      type: format
-    - path: /
-      device: format-2
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-0
+    - type: mount
       id: mount-2
-      type: mount
+      device: format-2
+      path: /
 
     # /home
-    - name: home
-      volgroup: lvm_volgroup-0
-      size: 4294967296B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/home
+    - type: lvm_partition
       id: lvm_partition-1
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-1
+      name: home
+      path: /dev/systemvg/home
       preserve: false
+      size: 4G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-3
-      type: format
-    - path: /home
-      device: format-3
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-1
+    - type: mount
       id: mount-3
-      type: mount
+      path: /home
+      device: format-3
 
     # /opt
-    - name: opt
-      volgroup: lvm_volgroup-0
-      size: 4294967296B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/opt
+    - type: lvm_partition
       id: lvm_partition-2
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-2
+      name: opt
+      path: /dev/systemvg/opt
       preserve: false
+      size: 4G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-4
-      type: format
-    - path: /opt
-      device: format-4
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-2
+    - type: mount
       id: mount-4
-      type: mount
+      device: format-4
+      path: /opt
 
     # /var
-    - name: var
-      volgroup: lvm_volgroup-0
-      size: 10737418240B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/var
+    - type: lvm_partition
       id: lvm_partition-3
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-3
+      name: var
+      path: /dev/systemvg/var
       preserve: false
+      size: 10G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-5
-      type: format
-    - path: /var
-      device: format-5
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-3
+    - type: mount
       id: mount-5
-      type: mount
+      device: format-5
+      path: /var
 
     # /var/log
-    - name: varlog
-      volgroup: lvm_volgroup-0
-      size: 5368709120B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/varlog
+    - type: lvm_partition
       id: lvm_partition-4
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-4
+      name: varlog
+      path: /dev/systemvg/varlog
       preserve: false
+      size: 5G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-6
-      type: format
-    - path: /var/log
-      device: format-6
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-4
+    - type: mount
       id: mount-6
-      type: mount
+      device: format-6
+      path: /var/log
 
     # /var/log/audit
-    - name: varlogaudit
-      volgroup: lvm_volgroup-0
-      size: 4294967296B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/varlogaudit
+    - type: lvm_partition
       id: lvm_partition-5
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-5
+      name: varlogaudit
+      path: /dev/systemvg/varlogaudit
       preserve: false
+      size: 4G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-7
-      type: format
-    - path: /var/log/audit
-      device: format-7
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-5
+    - type: mount
       id: mount-7
-      type: mount
+      device: format-7
+      path: /var/log/audit
 
     # /var/tmp
-    - name: vartmp
-      volgroup: lvm_volgroup-0
-      size: 4294967296B
-      wipe: superblock
-      preserve: false
-      path: /dev/systemvg/vartmp
+    - type: lvm_partition
       id: lvm_partition-6
-      type: lvm_partition
-    - fstype: xfs
-      volume: lvm_partition-6
+      name: vartmp
+      path: /dev/systemvg/vartmp
       preserve: false
+      size: 4G
+      volgroup: lvm_volgroup-0
+      wipe: superblock
+    - type: format
       id: format-8
-      type: format
-    - path: /var/tmp
-      device: format-8
+      fstype: xfs
+      preserve: false
+      volume: lvm_partition-6
+    - type: mount
       id: mount-8
-      type: mount
+      device: format-8
+      path: /var/tmp
   updates: security
+  user-data:
+    chpasswd:
+      expire: false
+    disable_root: false
+    users:
+      - name: root
+        passwd: "$2b$10$x6oAEJWARGocQHSyRjBPeea3F5EHBxazKejSU2ZixWJyJnwKM3uIq"
+        lock_passwd: false
+        shell: /bin/bash
+  late-commands:
+    - curtin in-target -- mkdir -p /etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /etc/ssh/sshd_config.d/01-permitrootlogin.conf
