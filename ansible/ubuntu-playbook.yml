@@ -124,8 +124,17 @@
         name: "{{ item }}"
         enabled: false
       loop:
-        # - networking
         - nftables
+
+    - name: Disable and mask services and do not touch the state
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: false
+        masked: true
+      loop:
+        - systemd-networkd
+        - systemd-networkd-wait-online
+        - systemd-networkd.socket
 
     - name: Remove default netplan configuration file
       ansible.builtin.file:
@@ -139,7 +148,7 @@
           network:
             version: 2
             renderer: NetworkManager
-        mode: '0644'
+        mode: '0600'
 
     - name: Ensure /etc/network/interfaces file exists
       ansible.builtin.file:
