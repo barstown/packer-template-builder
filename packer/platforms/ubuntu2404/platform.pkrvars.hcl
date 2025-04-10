@@ -19,6 +19,6 @@ proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
 proxmox_vm_id               = 204
 ssh_password                = "packer"
-ssh_user                    = "kyle"
+ssh_user                    = "root"
 template_description        = "Ubuntu 24.04 Template"
 template_name               = "Ubuntu2404-Template"
