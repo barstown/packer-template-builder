@@ -141,6 +141,14 @@
             renderer: NetworkManager
         mode: '0644'
 
+    - name: Ensure /etc/network/interfaces file exists
+      ansible.builtin.file:
+        path: /etc/network/interfaces
+        state: touch
+        owner: root
+        group: root
+        mode: '0644'
+
     - name: Update all packages
       ansible.builtin.apt:
         upgrade: full
