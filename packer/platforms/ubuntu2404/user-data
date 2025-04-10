@@ -14,6 +14,7 @@ autoinstall:
       renderer: NetworkManager
   packages:
     - cloud-init
+    - network-manager
   source:
     id: ubuntu-server
     search_drivers: false
