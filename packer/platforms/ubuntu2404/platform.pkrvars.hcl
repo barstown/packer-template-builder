@@ -4,7 +4,7 @@ boot_command                = [
     "e",
     "<wait2><down><wait><down><wait><down><wait><end><wait2>",
     " autoinstall ds="nocloud-net",
-    <wait5>",
+    "<wait5>",
     "<wait><f10><wait5>",
     ]
 cd_files                    = ["./packer/platforms/ubuntu2404/meta-data", "./packer/platforms/ubuntu2404/user-data"]
