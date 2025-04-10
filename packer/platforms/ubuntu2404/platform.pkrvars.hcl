@@ -14,6 +14,7 @@ iso_checksum                = "sha256:d6dab0c3a657988501b4bd76f1297c053df710e06e
 iso_name                    = "ubuntu-24.04.2-live-server-amd64.iso"
 platform                    = "ubuntu2404"
 playbook_file               = "ubuntu-playbook.yml"
+proxmox_boot                = "order=scsi0;ide2;ide0;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
 proxmox_vm_id               = 204
