@@ -3,7 +3,7 @@ boot_command                = [
     "<wait5>",
     "e",
     "<wait2><down><wait><down><wait><down><wait><end><wait2>",
-    " autoinstall ds="nocloud-net",
+    " autoinstall ds=nocloud-net",
     "<wait5>",
     "<wait><f10><wait5>",
     ]
