@@ -227,6 +227,9 @@ autoinstall:
   user-data:
     chpasswd:
       expire: false
+      users:
+        - name: root
+          password: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
     disable_root: false
     # users:
     #   - name: root
@@ -239,4 +242,4 @@ autoinstall:
     - mkdir -p /target/etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /target/etc/ssh/sshd_config.d/01-permitrootlogin.conf
     - echo 'kyle ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/packer
     - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/packer
-    - curtin in-target --target=/target -- echo 'root:packer' | chpasswd
+    # - curtin in-target --target=/target -- echo 'root:packer' | chpasswd
