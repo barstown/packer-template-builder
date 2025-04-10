@@ -139,6 +139,7 @@
           network:
             version: 2
             renderer: NetworkManager
+        mode: '0644'
 
     - name: Update all packages
       ansible.builtin.apt:
