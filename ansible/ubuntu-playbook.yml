@@ -134,15 +134,11 @@
 
     - name: Ensure Netplan file configures network with renderer NetworkManager
       ansible.builtin.copy:
-        path: /etc/netplan/50-cloud-init.yaml
-        block: |
+        dest: /etc/netplan/50-cloud-init.yaml
+        content: |
           network:
             version: 2
             renderer: NetworkManager
-
-    # - name: Apply netplan changes
-    #   ansible.builtin.command: netplan apply
-    #   changed_when: true
 
     - name: Update all packages
       ansible.builtin.apt:
@@ -341,8 +337,3 @@
         src: /etc/machine-id
         dest: /var/lib/dbus/machine-id
         state: link
-
-    - name: Remove tempoary packer permissions
-      ansible.builtin.file:
-        path: /etc/sudoers.d/packer
-        state: absent
