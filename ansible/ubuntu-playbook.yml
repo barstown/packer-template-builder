@@ -127,17 +127,22 @@
         # - networking
         - nftables
 
+    - name: Remove default netplan configuration file
+      ansible.builtin.file:
+        path: /etc/netplan/50-cloud-init.yaml
+        state: absent
+
     - name: Ensure Netplan file configures network with renderer NetworkManager
-      ansible.builtin.blockinfile:
+      ansible.builtin.copy:
         path: /etc/netplan/50-cloud-init.yaml
         block: |
           network:
             version: 2
             renderer: NetworkManager
 
-    - name: Apply netplan changes
-      ansible.builtin.command: netplan apply
-      changed_when: true
+    # - name: Apply netplan changes
+    #   ansible.builtin.command: netplan apply
+    #   changed_when: true
 
     - name: Update all packages
       ansible.builtin.apt:
