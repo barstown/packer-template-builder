@@ -92,7 +92,7 @@
           - htop
           - libnfs-utils
           - net-tools
-          - network-manager
+          # - network-manager
           - nfs4-acl-tools
           - pipx
           - python3-pip
@@ -115,7 +115,7 @@
         - firewalld
         - firstboot
         - haveged
-        - NetworkManager
+        # - NetworkManager
         - rsyslog
         - tuned
 
@@ -126,37 +126,37 @@
       loop:
         - nftables
 
-    - name: Disable and mask services and do not touch the state
-      ansible.builtin.service:
-        name: "{{ item }}"
-        enabled: false
-        masked: true
-      loop:
-        - systemd-networkd
-        - systemd-networkd-wait-online
-        - systemd-networkd.socket
+    # - name: Disable and mask services and do not touch the state
+    #   ansible.builtin.service:
+    #     name: "{{ item }}"
+    #     enabled: false
+    #     masked: true
+    #   loop:
+    #     - systemd-networkd
+    #     - systemd-networkd-wait-online
+    #     - systemd-networkd.socket
 
-    - name: Remove default netplan configuration file
-      ansible.builtin.file:
-        path: /etc/netplan/50-cloud-init.yaml
-        state: absent
+    # - name: Remove default netplan configuration file
+    #   ansible.builtin.file:
+    #     path: /etc/netplan/50-cloud-init.yaml
+    #     state: absent
 
-    - name: Ensure Netplan file configures network with renderer NetworkManager
-      ansible.builtin.copy:
-        dest: /etc/netplan/50-cloud-init.yaml
-        content: |
-          network:
-            version: 2
-            renderer: NetworkManager
-        mode: '0600'
+    # - name: Ensure Netplan file configures network with renderer NetworkManager
+    #   ansible.builtin.copy:
+    #     dest: /etc/netplan/50-cloud-init.yaml
+    #     content: |
+    #       network:
+    #         version: 2
+    #         renderer: NetworkManager
+    #     mode: '0600'
 
-    - name: Ensure /etc/network/interfaces file exists
-      ansible.builtin.file:
-        path: /etc/network/interfaces
-        state: touch
-        owner: root
-        group: root
-        mode: '0644'
+    # - name: Ensure /etc/network/interfaces file exists
+    #   ansible.builtin.file:
+    #     path: /etc/network/interfaces
+    #     state: touch
+    #     owner: root
+    #     group: root
+    #     mode: '0644'
 
     - name: Update all packages
       ansible.builtin.apt:
@@ -198,62 +198,6 @@
     - name: Set hostname to localhost.localdomain
       ansible.builtin.hostname:
         name: localhost.localdomain
-
-    # - name: Copy grepconf.sh to /usr/libexec
-    #   ansible.builtin.copy:
-    #     src: files/grepconf.sh
-    #     dest: /usr/libexec
-    #     owner: root
-    #     group: root
-    #     mode: '0755'
-
-    # - name: Copy GREP_COLORS to /etc
-    #   ansible.builtin.copy:
-    #     src: files/GREP_COLORS
-    #     dest: /etc
-    #     owner: root
-    #     group: root
-    #     mode: '0644'
-
-    # - name: Copy DIR_COLORS to /etc
-    #   ansible.builtin.copy:
-    #     src: files/DIR_COLORS
-    #     dest: /etc
-    #     owner: root
-    #     group: root
-    #     mode: '0644'
-
-    # - name: Copy DIR_COLORS.lightbgcolor to /etc
-    #   ansible.builtin.copy:
-    #     src: files/DIR_COLORS.lightbgcolor
-    #     dest: /etc
-    #     owner: root
-    #     group: root
-    #     mode: '0644'
-
-    # - name: Copy contents of profile.d to /etc/profile.d
-    #   ansible.builtin.copy:
-    #     src: files/profile.d/
-    #     dest: /etc/profile.d
-    #     owner: root
-    #     group: root
-    #     mode: '0644'
-
-    # - name: Ensure skip_defaults_vim is uncommented in /etc/vim/vimrc
-    #   ansible.builtin.lineinfile:
-    #     path: /etc/vim/vimrc
-    #     regexp: '^"\s*let g:skip_defaults_vim = 1'
-    #     line: 'let g:skip_defaults_vim = 1'
-    #     state: present
-    #     backrefs: yes
-
-    # - name: Create vimrc overrides
-    #   ansible.builtin.copy:
-    #     src: files/vimrc.local
-    #     dest: /etc/vim/vimrc.local
-    #     owner: root
-    #     group: root
-    #     mode: '0644'
 
     #################
     # Cleanup Block #
