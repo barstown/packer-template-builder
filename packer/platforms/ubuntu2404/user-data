@@ -9,7 +9,7 @@ autoinstall:
     layout: us
   locale: en_US.UTF-8
   identity:
-    hostname: ubuntu
+    hostname: localhost
     # sacrificial user
     username: packer
     password: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
