@@ -299,3 +299,10 @@
         src: /etc/machine-id
         dest: /var/lib/dbus/machine-id
         state: link
+
+    - name: Remove the user 'packer'
+      ansible.builtin.user:
+        name: packer
+        state: absent
+        remove: true
+        force: true
