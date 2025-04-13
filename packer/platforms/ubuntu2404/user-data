@@ -8,8 +8,8 @@ autoinstall:
   keyboard:
     layout: us
   locale: en_US.UTF-8
-  identity:
-    hostname: ubuntu
+  # identity:
+  #   hostname: ubuntu
   packages:
     - cloud-init
     - qemu-guest-agent
@@ -229,5 +229,6 @@ autoinstall:
         - name: root
           password: $6$wtR8QZvEHSOFbw7A$XizypQwxMPPJdIOHK2q7XBQ6YujXcB9Ree1ZdsN4QBh/ShZXOZmSrNBJMvL3MQbtufzeQneDzLiEsSqGJAXal/
     disable_root: false
+    hostname: ubuntu
   late-commands:
     - mkdir -p /target/etc/ssh/sshd_config.d/ && echo 'PermitRootLogin yes' > /target/etc/ssh/sshd_config.d/01-permitrootlogin.conf
