@@ -8,6 +8,8 @@ autoinstall:
   keyboard:
     layout: us
   locale: en_US.UTF-8
+  identity:
+    hostname: ubuntu
   packages:
     - cloud-init
     - qemu-guest-agent
