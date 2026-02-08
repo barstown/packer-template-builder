@@ -16,7 +16,7 @@ clearpart --all --initlabel
 # part pv.0 --fstype=lvmpv --ondisk=sda --size=51200
 part pv.0 --fstype=lvmpv --ondisk=sda --size=1024 --grow
 part /boot/efi --fstype=vfat --ondisk=sda --size=1024
-part /boot --fstype=xfs --ondisk=sda --size=1024
+part /boot --fstype=xfs --ondisk=sda --size=2048
 volgroup systemvg --pesize=4096 pv.0
 logvol / --vgname=systemvg --name=sysroot --fstype=xfs --size=10240
 logvol /home --vgname=systemvg --name=home --fstype=xfs --size=4096

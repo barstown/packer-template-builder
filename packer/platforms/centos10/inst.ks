@@ -12,7 +12,7 @@ bootloader --location=boot --append="rhgb quiet crashkernel=1G-4G:192M,4G-64G:25
 zerombr
 clearpart --all --initlabel
 part pv.0 --fstype=lvmpv --ondisk=sda --size=1024 --grow
-part /boot --fstype=xfs --ondisk=sda --size=1024
+part /boot --fstype=xfs --ondisk=sda --size=2048
 part /boot/efi --fstype=vfat --ondisk=sda --size=1024
 volgroup systemvg --pesize=4096 pv.0
 logvol / --vgname=systemvg --name=sysroot --fstype=xfs --size=10240
