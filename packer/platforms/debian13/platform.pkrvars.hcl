@@ -18,18 +18,18 @@ boot_command                = [
     "<enter><wait300>",
     "<left><enter>",
     ]
-cd_files                    = ["./packer/platforms/debian12/preseed.cfg"]
+cd_files                    = ["./packer/platforms/debian13/preseed.cfg"]
 cd_label                    = "cidata"
 extra_args                  = ["--scp-extra-args", "'-O'"]
-iso_checksum                = "sha256:3e2c2092d79deca0aba80f9ffc6ff96b9b9b303d858f91e1bc2790fd83856fdb"
-iso_name                    = "debian-12.13.0-amd64-DVD-1.iso"
-platform                    = "debian12"
+iso_checksum                = "sha256:7b7837fa2ed64fd45224bff905643bd3ab32157dcc0ab1dc68aad5b9dc2d4d39"
+iso_name                    = "debian-13.3.0-amd64-DVD-1.iso"
+platform                    = "debian13"
 playbook_file               = "debian-playbook.yml"
 proxmox_boot                = "order=scsi0;scsi1;scsi2;ide2;ide0;net0"
 proxmox_disk_size           = "50G"
 proxmox_iso_path            = "truenas_lab:iso"
-proxmox_vm_id               = 203
+proxmox_vm_id               = 200
 ssh_password                = "packer"
 ssh_user                    = "root"
-template_description        = "Debian 12 Template"
-template_name               = "Debian12-Template"
+template_description        = "Debian 13 Template"
+template_name               = "Debian13-Template"

@@ -206,7 +206,7 @@
         regexp: '^"\s*let g:skip_defaults_vim = 1'
         line: 'let g:skip_defaults_vim = 1'
         state: present
-        backrefs: yes
+        backrefs: true
 
     - name: Create vimrc overrides
       ansible.builtin.copy:
@@ -219,12 +219,24 @@
     #################
     # Cleanup Block #
     #################
+    # - name: Cleanup network configs
+    #   ansible.builtin.shell: |
+    #     rm -f /etc/network/interfaces
+    #     rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
+    #     rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
+    #     rm -f /etc/NetworkManager/system-connections/*.nmconnection
+    #   changed_when: true
+
     - name: Cleanup network configs
-      ansible.builtin.shell: |
-        rm -f /etc/network/interfaces
-        rm -f /etc/sysconfig/network-scripts/ifcfg-ens*
-        rm -f /etc/sysconfig/network-scripts/ifcfg-eth*
-        rm -f /etc/NetworkManager/system-connections/*.nmconnection
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /etc/network/interfaces
+        - /etc/sysconfig/network-scripts/ifcfg-ens*
+        - /etc/sysconfig/network-scripts/ifcfg-eth*
+        - /etc/NetworkManager/system-connections/*.nmconnection
+      register: removed_network_configs
       changed_when: true
 
     - name: Remove dependencies that are no longer required and purge their configuration files
@@ -262,20 +274,75 @@
         state: stopped
       ignore_errors: true # noqa: ignore-errors
 
-    - name: Cleanup and truncate logs
-      ansible.builtin.shell: |
-        logrotate -f /etc/logrotate.conf
-        rm -f /var/log/*-???????? /var/log/*.gz
-        rm -f /var/log/dmesg.old
-        rm -rf /tmp/*
-        rm -rf /var/log/installer
-        rm -rf /var/tmp/*
-        cat /dev/null > /var/log/audit/audit.log
-        cat /dev/null > /var/log/grubby
-        cat /dev/null > /var/log/lastlog
-        cat /dev/null > /var/log/wtmp
-        cat /dev/null > /var/log/btmp
-        cat /dev/null > /var/run/utmp
+    # - name: Cleanup and truncate logs
+    #   ansible.builtin.shell: |
+    #     logrotate -f /etc/logrotate.conf
+    #     rm -f /var/log/*-???????? /var/log/*.gz
+    #     rm -f /var/log/dmesg.old
+    #     rm -rf /tmp/*
+    #     rm -rf /var/log/installer
+    #     rm -rf /var/tmp/*
+    #     cat /dev/null > /var/log/audit/audit.log
+    #     cat /dev/null > /var/log/grubby
+    #     cat /dev/null > /var/log/lastlog
+    #     cat /dev/null > /var/log/wtmp
+    #     cat /dev/null > /var/log/btmp
+    #     cat /dev/null > /var/run/utmp
+    #   changed_when: true
+
+    - name: Force log rotation
+      ansible.builtin.command: logrotate -f /etc/logrotate.conf
+      register: logrotate_output
+      ignore_errors: true
+      changed_when: true
+
+    - name: Cleanup network configs
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/*
+        - /var/log/*-???????? /var/log/*.gz
+        - /var/log/dmesg.old
+        - /var/log/installer
+        - /var/tmp/*
+      register: removed_network_configs
+      changed_when: true
+
+    - name: Truncate audit log
+      ansible.builtin.shell: cat /dev/null > /var/log/audit/audit.log
+      register: audit_log_truncate
+      ignore_errors: true
+      changed_when: true
+
+    - name: Truncate grubby log
+      ansible.builtin.shell: cat /dev/null > /var/log/grubby
+      register: grubby_truncate
+      ignore_errors: true
+      changed_when: true
+
+    - name: Truncate lastlog
+      ansible.builtin.shell: cat /dev/null > /var/log/lastlog
+      register: lastlog_truncate
+      ignore_errors: true
+      changed_when: true
+
+    - name: Truncate wtmp log
+      ansible.builtin.shell: cat /dev/null > /var/log/wtmp
+      register: wtmp_truncate
+      ignore_errors: true
+      changed_when: true
+
+    - name: Truncate btmp log
+      ansible.builtin.shell: cat /dev/null > /var/log/btmp
+      register: btmp_truncate
+      ignore_errors: true
+      changed_when: true
+
+    - name: Truncate utmp log
+      ansible.builtin.shell: cat /dev/null > /var/run/utmp
+      register: utmp_truncate
+      ignore_errors: true
       changed_when: true
 
     - name: Remove hardware udev rules
