@@ -1,11 +1,11 @@
 packer {
     required_plugins {
       proxmox = {
-        version = "= 1.2.1" # 1.2.2 cpu_type broken
+        version = "= 1.2.3" # 1.2.2 cpu_type broken
         source  = "github.com/hashicorp/proxmox"
       }
       ansible = {
-        version = "~> 1"
+        version = "= 1.1.4"
         source  = "github.com/hashicorp/ansible"
       }
     }
